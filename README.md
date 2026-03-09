@@ -1,19 +1,19 @@
-# Poker Solver Tracker (React + TypeScript)
+# Poker Solver Pro (React + TypeScript)
 
-Application visuelle et interactive inspirée de workflows **GTO+** :
-- configuration de spot postflop,
-- éditeur de ranges en grille 13x13 pour IP/OOP,
-- solveur "GTO-like" (heuristique) avec fréquences d'actions et EV par combo,
-- calcul d'équité Monte Carlo,
-- sizing advisor selon SPR,
-- tracker de mains de session.
+Application multi-pages orientée produit premium :
 
-> ⚠️ Note : ce projet est une base "GTO+ like" côté UX/fonctions, pas un moteur CFR complet de niveau production.
+- **Dashboard**: équité Monte Carlo rapide.
+- **Préflop**: plan selon position, stack effectif (bb), joueurs restants, places payées (bulle ICM), pression des joueurs à parler.
+- **Postflop**: plan flop/turn/river selon SPR, texture board, position IP/OOP, sizings recommandés.
+- **Solver**: éditeur de ranges 13x13 IP/OOP + solveur GTO-like (fréquences d'actions, EV par combo).
+- **Tracker**: suivi des mains et résultat net en bb.
+
+> ⚠️ Le solveur est "GTO-like" heuristique (UX et fonctionnalités avancées), pas un moteur CFR/Nash complet.
 
 ## Stack
 - React + TypeScript + Vite
 - Vitest + Testing Library
-- Architecture en couches (domain / application / infrastructure / presentation)
+- Architecture en couches: `domain / application / infrastructure / presentation`
 
 ## Lancer
 ```bash
@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-## Tests et build
+## Vérifications
 ```bash
 npm run test
 npm run build
