@@ -1,20 +1,37 @@
 import { useMemo, useState } from 'react';
 import { ComputeEquityUseCase } from '../../application/useCases/ComputeEquityUseCase';
 import { GetSizingUseCase } from '../../application/useCases/GetSizingUseCase';
+import { SolveSpotUseCase } from '../../application/useCases/SolveSpotUseCase';
 import { TrackHandUseCase } from '../../application/useCases/TrackHandUseCase';
 import { EquityCalculator } from '../../domain/services/EquityCalculator';
+import { GtoLikeSolver, SolverOutput } from '../../domain/services/GtoLikeSolver';
+import { createRangeGrid, defaultRangeWeights } from '../../domain/services/RangeMatrix';
 import { SizingAdvisor, Street } from '../../domain/services/SizingAdvisor';
 import { LocalStorageHandRepository } from '../../infrastructure/storage/LocalStorageHandRepository';
+
+const cycleWeight = (v: number): number => {
+  if (v < 25) return 25;
+  if (v < 50) return 50;
+  if (v < 75) return 75;
+  if (v < 100) return 100;
+  return 0;
+};
 
 export function usePokerSolver() {
   const equityUc = useMemo(() => new ComputeEquityUseCase(new EquityCalculator()), []);
   const sizingUc = useMemo(() => new GetSizingUseCase(new SizingAdvisor()), []);
+  const solveUc = useMemo(() => new SolveSpotUseCase(new GtoLikeSolver()), []);
   const trackUc = useMemo(() => new TrackHandUseCase(new LocalStorageHandRepository()), []);
+
+  const rangeCells = useMemo(() => createRangeGrid(), []);
+  const [ipRange, setIpRange] = useState<Record<string, number>>(() => defaultRangeWeights());
+  const [oopRange, setOopRange] = useState<Record<string, number>>(() => defaultRangeWeights());
 
   const [equity, setEquity] = useState<string>('Lance une simulation.');
   const [sizing, setSizing] = useState<string>('Calcule un sizing.');
   const [error, setError] = useState<string>('');
   const [refresh, setRefresh] = useState(0);
+  const [solveResult, setSolveResult] = useState<SolverOutput | null>(null);
 
   const hands = useMemo(() => trackUc.list(), [trackUc, refresh]);
 
@@ -33,6 +50,20 @@ export function usePokerSolver() {
     setSizing(`SPR ${res.spr} • ${res.sizes.small}/${res.sizes.standard}/${res.sizes.big} bb • ${res.note}`);
   };
 
+  const solveSpot = (board: string, potBb: number, stackBb: number) => {
+    const ip = Object.fromEntries(rangeCells.map((c) => [c.hand, ipRange[c.key] ?? 0]));
+    const oop = Object.fromEntries(rangeCells.map((c) => [c.hand, oopRange[c.key] ?? 0]));
+    setSolveResult(solveUc.execute({ board, potBb, stackBb, ipRange: ip, oopRange: oop }));
+  };
+
+  const updateRangeCell = (player: 'ip' | 'oop', key: string) => {
+    if (player === 'ip') {
+      setIpRange((prev) => ({ ...prev, [key]: cycleWeight(prev[key] ?? 0) }));
+      return;
+    }
+    setOopRange((prev) => ({ ...prev, [key]: cycleWeight(prev[key] ?? 0) }));
+  };
+
   const addHand = (payload: { hand: string; street: 'preflop' | 'flop' | 'turn' | 'river'; result: 'win' | 'loss' | 'tie'; bb: number }) => {
     trackUc.add(payload);
     setRefresh((v) => v + 1);
@@ -43,5 +74,20 @@ export function usePokerSolver() {
     setRefresh((v) => v + 1);
   };
 
-  return { equity, sizing, error, hands, computeEquity, computeSizing, addHand, clearHands };
+  return {
+    equity,
+    sizing,
+    error,
+    hands,
+    rangeCells,
+    ipRange,
+    oopRange,
+    solveResult,
+    computeEquity,
+    computeSizing,
+    solveSpot,
+    updateRangeCell,
+    addHand,
+    clearHands
+  };
 }

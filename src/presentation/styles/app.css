@@ -1,10 +1,10 @@
 :root { color-scheme: dark; }
 body { margin: 0; font-family: Inter, system-ui, sans-serif; background: radial-gradient(circle at top, #184a36, #0d1117 60%); color: #f6f8fa; }
-.layout { width: min(1100px, 94vw); margin: 1.2rem auto 2rem; display: grid; gap: 1rem; }
+.layout { width: min(1300px, 96vw); margin: 1rem auto 2rem; display: grid; gap: 1rem; }
 .panel { background: rgba(22, 27, 34, 0.94); border: 1px solid #30363d; border-radius: 12px; padding: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,.2); }
 .table-bg { background-image: linear-gradient(120deg, rgba(47,129,247,.14), rgba(35,134,54,.2)); }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: .6rem; }
-input, select, button { background: #0f141a; border: 1px solid #3d444d; color: #f6f8fa; border-radius: 10px; padding: .6rem .7rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: .6rem; }
+input, select, button { background: #0f141a; border: 1px solid #3d444d; color: #f6f8fa; border-radius: 10px; padding: .55rem .7rem; }
 button { background: #2f81f7; border: 0; font-weight: 600; cursor: pointer; }
 button.danger { background: #da3633; }
 .cards-row { display: flex; gap: .5rem; flex-wrap: wrap; }
@@ -12,4 +12,11 @@ button.danger { background: #da3633; }
 .poker-card.red { color: #cf222e; }
 .error { color: #ff7b72; }
 .stats { margin-top: .7rem; font-weight: 600; }
-ul { padding-left: 1.1rem; }
+.range-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .8rem; }
+.range-grid { display: grid; grid-template-columns: repeat(13, minmax(40px, 1fr)); gap: 3px; }
+.cell { padding: .2rem; font-size: .62rem; line-height: 1.15; display: grid; gap: 2px; text-align: center; }
+.cell small { opacity: .95; font-size: .58rem; }
+.w100{ background:#238636; }.w75{ background:#1f6feb; }.w50{ background:#8957e5; }.w25{ background:#9e6a03; }.w0{ background:#30363d; }
+.solver-output table { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+.solver-output th, .solver-output td { border-bottom: 1px solid #30363d; padding: .3rem .45rem; font-size: .85rem; }
+@media (max-width: 1200px){ .range-wrapper{ grid-template-columns: 1fr; } }
