@@ -6,19 +6,24 @@ interface Props {
   selectedHero: Card[];
   selectedBoard: Card[];
   target: 'hero' | 'board';
+  maxBoardCards: number;
   onTargetChange: (target: 'hero' | 'board') => void;
   onToggle: (card: Card) => void;
 }
 
-export function CardSelector({ selectedHero, selectedBoard, target, onTargetChange, onToggle }: Props) {
+export function CardSelector({ selectedHero, selectedBoard, target, maxBoardCards, onTargetChange, onToggle }: Props) {
   const deck = [...RANKS].reverse().flatMap((r) => SUITS.map((s) => parseCard(`${r}${s}`)));
   const selected = new Set([...selectedHero, ...selectedBoard].map(cardToString));
 
   return (
     <div>
       <div className="picker-head">
-        <button type="button" className={target === 'hero' ? 'active' : ''} onClick={() => onTargetChange('hero')}>Sélection Hero</button>
-        <button type="button" className={target === 'board' ? 'active' : ''} onClick={() => onTargetChange('board')}>Sélection Board</button>
+        <button type="button" className={target === 'hero' ? 'active' : ''} onClick={() => onTargetChange('hero')}>
+          Hero ({selectedHero.length}/2)
+        </button>
+        <button type="button" className={target === 'board' ? 'active' : ''} onClick={() => onTargetChange('board')}>
+          Board ({selectedBoard.length}/{maxBoardCards})
+        </button>
       </div>
       <div className="card-palette">
         {deck.map((card) => {

@@ -22,7 +22,8 @@ export default function App() {
   } = usePokerSolver();
 
   const [selectedHero, setSelectedHero] = useState<Card[]>(parseCards('As Kd'));
-  const [selectedBoard, setSelectedBoard] = useState<Card[]>(parseCards('Ah 8h 2c'));
+  const [selectedBoard, setSelectedBoard] = useState<Card[]>([]);
+  const [boardStage, setBoardStage] = useState<'preflop' | 'flop' | 'turn' | 'river'>('preflop');
   const [opponents, setOpponents] = useState(1);
   const [iterations, setIterations] = useState(6000);
   const [street, setStreet] = useState<'preflop' | 'flop' | 'turn' | 'river'>('flop');
@@ -47,6 +48,7 @@ export default function App() {
   const heroText = useMemo(() => selectedHero.map(cardToString).join(' '), [selectedHero]);
   const boardText = useMemo(() => selectedBoard.map(cardToString).join(' '), [selectedBoard]);
   const net = hands.reduce((sum, item) => sum + item.bb, 0);
+  const maxBoardCards = boardStage === 'preflop' ? 0 : boardStage === 'flop' ? 3 : boardStage === 'turn' ? 4 : 5;
 
   const toggleCard = (card: Card) => {
     const id = cardToString(card);
@@ -55,7 +57,7 @@ export default function App() {
     if (inHero) return setSelectedHero((prev) => prev.filter((c) => cardToString(c) !== id));
     if (inBoard) return setSelectedBoard((prev) => prev.filter((c) => cardToString(c) !== id));
     if (target === 'hero') return selectedHero.length < 2 ? setSelectedHero((prev) => [...prev, card]) : undefined;
-    return selectedBoard.length < 5 ? setSelectedBoard((prev) => [...prev, card]) : undefined;
+    return selectedBoard.length < maxBoardCards ? setSelectedBoard((prev) => [...prev, card]) : undefined;
   };
 
   const onEquity = (e: FormEvent) => { e.preventDefault(); computeEquity(heroText, boardText, opponents, iterations); };
@@ -70,19 +72,40 @@ export default function App() {
 
   return (
     <main className="layout">
-      <h1>Poker Solver Pro</h1>
+      <h1>Poker Solver Pro — Texas Hold'em</h1>
       <p className="helper">👋 Nouveau ? Commence par l’étape 1 ci-dessous. En 30 secondes tu as une première recommandation.</p>
       <div className="quickstart">
-        <div><strong>1)</strong> Sélectionne tes cartes Hero + Board.</div>
+        <div><strong>1)</strong> Texas Hold'em = 2 cartes Hero seulement + board progressif.</div>
         <div><strong>2)</strong> Va dans Dashboard et clique “Simuler équité”.</div>
         <div><strong>3)</strong> Va dans Préflop/Postflop pour les conseils d’actions.</div>
       </div>
 
       <nav className="tabs">{pages.map((p) => <button key={p} type="button" className={p === page ? 'active' : ''} onClick={() => setPage(p)}>{p}</button>)}</nav>
 
+      <section className="panel">
+        <h2>Format de coup (Hold'em)</h2>
+        <div className="tabs">
+          {(['preflop', 'flop', 'turn', 'river'] as const).map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={boardStage === s ? 'active' : ''}
+              onClick={() => {
+                setBoardStage(s);
+                const limit = s === 'preflop' ? 0 : s === 'flop' ? 3 : s === 'turn' ? 4 : 5;
+                setSelectedBoard((prev) => prev.slice(0, limit));
+              }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <p className="helper">Au départ (préflop) le board doit être vide. Flop = 3 cartes, Turn = 4, River = 5.</p>
+      </section>
+
       <section className="panel table-bg">
-        <h2>Étape 1 — Sélection des cartes</h2>
-        <CardSelector selectedHero={selectedHero} selectedBoard={selectedBoard} target={target} onTargetChange={setTarget} onToggle={toggleCard} />
+        <h2>Étape 1 — Sélection des cartes (Hold'em)</h2>
+        <CardSelector selectedHero={selectedHero} selectedBoard={selectedBoard} target={target} maxBoardCards={maxBoardCards} onTargetChange={setTarget} onToggle={toggleCard} />
         <p className="helper">Hero: {heroText || '—'} • Board: {boardText || '—'}</p>
         <div className="cards-row">{selectedHero.map((c, i) => <PokerCard card={c} key={`h-${i}`} />)}{selectedBoard.map((c, i) => <PokerCard card={c} key={`b-${i}`} />)}</div>
       </section>
