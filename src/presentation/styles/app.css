@@ -4,6 +4,11 @@ body { margin: 0; font-family: Inter, system-ui, sans-serif; background: radial-
 .panel { background: rgba(22, 27, 34, 0.94); border: 1px solid #30363d; border-radius: 12px; padding: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,.2); }
 .table-bg { background-image: linear-gradient(120deg, rgba(47,129,247,.14), rgba(35,134,54,.2)); }
 .tabs,.picker-head { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+.helper { color:#c9d1d9; margin:.2rem 0 .5rem; }
+.quickstart { display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:.5rem; }
+.quickstart > div { background:#111822; border:1px solid #30363d; border-radius:10px; padding:.55rem .7rem; }
+
 .tabs button, .picker-head button { text-transform: capitalize; background: #212830; }
 .tabs .active, .picker-head .active { background: #2f81f7; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: .6rem; }
